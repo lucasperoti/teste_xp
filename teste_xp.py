@@ -1,9 +1,6 @@
-from cmath import log
-from tkinter import E
 import requests
 import pandas as pd
 import logging
-import json
 
 class Teste_xp():
 
@@ -16,10 +13,11 @@ class Teste_xp():
         """
         json_response = self.get_api_response(self.url)
         most_lauch_year = self.date_with_most_launchs(json_response)
-        most_lauch_site = self.launch_site_with_most_launchs(json_response)
+        most_launch_site = self.launch_site_with_most_launchs(json_response)
         launchs = self.launchs_between_years(json_response)
+        self.create_xlsx_result(most_lauch_year,most_launch_site,launchs)
 
-        
+
     def get_api_response(self,api_url):
         """
             Função que realiza o Get no endpoint de uma api e retorna o resultado convertido em json.
@@ -117,8 +115,21 @@ class Teste_xp():
         except Exception as e:
             logging.error(f"erro ao separar o launch site com mais lançamentos: {e}")
     
-
-
+    def create_xlsx_result(self, most_lauch_year,most_launch_site,launchs):
+        """
+            Funçao que cria o arquivo xlsx de resultado
+            :param most_lauch_year: Ano com mais lançamentos
+            :type most_lauch_year: str
+            :param most_launch_site: launch_site com mais lançamentos
+            :type most_launch_site: str
+            :param launchs: recebe numero de lançamentos
+            :type launchs: str
+        """
+        data = {'Ano Com Mais Lançamentos': [most_lauch_year], 
+                    'Launch site Com mais lançamentos': [most_launch_site], 
+                    'Quantidade de lançamentos entre 2019-2021': [launchs]}
+        dataframe = pd.DataFrame(data)
+        dataframe.to_excel("result.xlsx", index=False)
 
 if __name__ == '__main__':
     teste = Teste_xp()
