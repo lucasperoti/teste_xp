@@ -1,3 +1,4 @@
+from cmath import log
 from tkinter import E
 import requests
 import pandas as pd
@@ -16,8 +17,7 @@ class Teste_xp():
         json_response = self.get_api_response(self.url)
         most_lauch_year = self.date_with_most_launchs(json_response)
         most_lauch_site = self.launch_site_with_most_launchs(json_response)
-        print(most_lauch_site)
-        print(most_lauch_year)
+        launchs = self.launchs_between_years(json_response)
 
         
     def get_api_response(self,api_url):
@@ -71,6 +71,16 @@ class Teste_xp():
             logging.error(f"erro ao separar o launch site com mais lançamentos: {e}")
     
     def filter_json_by_key(self,json,key_value):
+        """
+            Funçao que recebe o json da api da SpaceX e retorna uma lista de 
+            valores com base na chave que foi pasada como parametro.
+            :param json: recebe o json da api 
+            :type json: json
+            :param key_value: recebe a chave que sera usada para filtrar o json
+            :type key_value: str
+            :return: retorna uma lista com os itens filtrados
+            :type return: list
+        """
         try:
             list_years = [k[key_value] for k in json if k.get(key_value)]
             return list_years
@@ -78,13 +88,34 @@ class Teste_xp():
             logging.error(f"erro ao separar o launch site com mais lançamentos: {e}")
     
     def most_appears_value_in_list(self,list):
+        """
+            Funçao que recebe uma lista como parametro e retorna o valor com a maior recorencia
+            :param list: recebe uma lista
+            :type list: list
+            :return: retorna o valor com a maior recorencia
+            :type return: str
+        """
         try:
             most_appears = max(set(list), key = list.count)
             return most_appears
         except Exception as e:
             logging.error(f"erro ao separar o launch site com mais lançamentos: {e}")
 
-
+    def launchs_between_years(self,api_json):
+        """
+            Funçao que recebe o json da api da SpaceX e retorna a quantidade de 
+            lançamentos entre os anos de 2019-2020
+            :param api_json: recebe o json da api 
+            :type api_json: json
+            :return: retorna a quantidade de laçamentos
+            :type return: str
+        """
+        try:
+            list_years = self.filter_json_by_key(api_json,'launch_year')
+            launchs = len([year for year in list_years if year == '2019' or year == '2020' or year == '2021'])
+            return launchs
+        except Exception as e:
+            logging.error(f"erro ao separar o launch site com mais lançamentos: {e}")
     
 
 
