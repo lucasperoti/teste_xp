@@ -16,6 +16,9 @@ class Teste_xp():
         json_response = self.get_api_response(self.url)
         most_lauch_year = self.date_with_most_launchs(json_response)
         most_lauch_site = self.launch_site_with_most_launchs(json_response)
+        print(most_lauch_site)
+        print(most_lauch_year)
+
         
     def get_api_response(self,api_url):
         """
@@ -43,8 +46,8 @@ class Teste_xp():
             :type return: str
         """
         try:
-            list_years = [k['launch_year'] for k in api_json if k.get('launch_year')]
-            most_launch_year = max(set(list_years), key = list_years.count)
+            list_years = self.filter_json_by_key(api_json,'launch_year')
+            most_launch_year = self.most_appears_value_in_list(list_years) 
             logging.info(f"ano com mais lançamentos: {most_launch_year}")
             return most_launch_year
         except Exception as e:
@@ -59,13 +62,31 @@ class Teste_xp():
             :type return: str
         """
         try:
-            list_sites = [k['launch_site'] for k in api_json if k.get('launch_site')]
-            site_names = [k['site_name_long'] for k in list_sites if k.get('site_name_long')]
-            most_site_name = max(set(site_names), key = site_names.count)
-            logging.info(f"launch_site com mais lançamentos: {most_site_name}")
-            return most_site_name
+            list_sites = self.filter_json_by_key(api_json,'launch_site')
+            list_site_names = self.filter_json_by_key(list_sites,'site_name_long')
+            most_launch_site = self.most_appears_value_in_list(list_site_names)
+            logging.info(f"launch_site com mais lançamentos: {most_launch_site}")
+            return most_launch_site
         except Exception as e:
             logging.error(f"erro ao separar o launch site com mais lançamentos: {e}")
+    
+    def filter_json_by_key(self,json,key_value):
+        try:
+            list_years = [k[key_value] for k in json if k.get(key_value)]
+            return list_years
+        except Exception as e:
+            logging.error(f"erro ao separar o launch site com mais lançamentos: {e}")
+    
+    def most_appears_value_in_list(self,list):
+        try:
+            most_appears = max(set(list), key = list.count)
+            return most_appears
+        except Exception as e:
+            logging.error(f"erro ao separar o launch site com mais lançamentos: {e}")
+
+
+    
+
 
 
 if __name__ == '__main__':
